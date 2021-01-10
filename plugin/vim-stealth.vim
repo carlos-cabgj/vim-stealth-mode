@@ -4,9 +4,9 @@ let g:OneIdeDeletePathernEncrypt = "~|.swp"
 let g:ignoreFile                 = '.gitignore'
 let g:OneIdeVimEspaceRegex       = '~\[|^'
 
-command! -n=0 -bar OneProjectAddPassword :call one_stealth#addPassword()
-command! -n=0 -bar OneProjectDecrypt :call one_stealth#projectDecrypt()
-command! -n=0 -bar OneProjectEncrypt :call one_stealth#ProjectEncrypt()
+command! -n=0 -bar OneProjectAddPassword :call vim_stealth#addPassword()
+command! -n=0 -bar OneProjectDecrypt :call vim_stealth#projectDecrypt()
+command! -n=0 -bar OneProjectEncrypt :call vim_stealth#ProjectEncrypt()
 
 augroup oneenc
     autocmd BufReadPre   * call s:onReadOneIdePre(expand("<amatch>"))
@@ -80,14 +80,14 @@ function! s:changeAlphabet(text)
     return textReturn
 endfunction
 
-function! one_stealth#disableEncrypt()
+function! vim_stealth#disableEncrypt()
     :set swapfile
     :set backup
     :set writebackup
     :set viminfo='1000,<9999,s100
 endfunction
 
-function! one_stealth#enableEncrypt()
+function! vim_stealth#enableEncrypt()
     :set noundofile
     :set noswapfile
     :set nobackup
@@ -97,27 +97,27 @@ function! one_stealth#enableEncrypt()
     :set cm=blowfish2
 endfunction
 
-function! one_stealth#setPassSalt(path)
+function! vim_stealth#setPassSalt(path)
     let name = inputsecret(onefunctions#i18n('saltpasstoenc'))
     let s:passwords[a:path] = {'salt' : name, 'pass' : ''}
 endfunction
 
-function! one_stealth#setPassValue(path)
+function! vim_stealth#setPassValue(path)
     let name = inputsecret(onefunctions#i18n('passtoenc'))
     let s:passwords[a:path]['pass'] = name
 endfunction
 
-function! one_stealth#setPass(path)
-    :call one_stealth#setPassSalt(a:path)
-    :call one_stealth#setPassValue(a:path)
+function! vim_stealth#setPass(path)
+    :call vim_stealth#setPassSalt(a:path)
+    :call vim_stealth#setPassValue(a:path)
 endfunction
 
-function one_stealth#addPassword()
+function vim_stealth#addPassword()
     let pathSearch = onefunctions#getFileInTree('.one-project')
     let config = onefunctions#readConfig(pathSearch[0])
 
     if pathSearch != []
-        :call one_stealth#setPass(pathSearch[1])
+        :call vim_stealth#setPass(pathSearch[1])
     endif
 endfunction
 
@@ -136,9 +136,9 @@ function! s:onReadOneIdePre(file)
 
         if onefunctions#regexTestFiles(ignored, l:endpath) == 0
             if has_key(config, 'encryption') == 1 && config['encryption']['status'] == 1
-                :call one_stealth#enableEncrypt()
+                :call vim_stealth#enableEncrypt()
                 if has_key(s:passwords, pathSearch[1]) == 0
-                    :call one_stealth#setPass(pathSearch[1])
+                    :call vim_stealth#setPass(pathSearch[1])
                 endif
                 silent! exec ':set key='.s:getTemperedPass(s:passwords[pathSearch[1]], expand('%:t'))
             endif
@@ -163,7 +163,7 @@ function s:onSaveOneIdePre(file)
                 let ignored = onefunctions#readIgnore(pathIgnore[0])
             endif
 
-            call one_stealth#enableEncrypt()
+            call vim_stealth#enableEncrypt()
 
             if has_key(s:passwords, pathSearch[1]) == 1 && onefunctions#regexTestFiles(ignored, expand('%:p')) == 0
                 if s:cryptWorking == 0
@@ -171,7 +171,7 @@ function s:onSaveOneIdePre(file)
                 endif
             endif
         else
-            call one_stealth#disableEncrypt()
+            call vim_stealth#disableEncrypt()
         endif
 
         if has_key(config, 'autodeploy') == 1 && config['autodeploy']['status'] == 1
@@ -221,7 +221,7 @@ function s:onSaveOneIdePos()
     endif
 endfunction
 
-function one_stealth#ProjectEncrypt()
+function vim_stealth#ProjectEncrypt()
 
     let pathSearch = onefunctions#getFileInTree('.one-project')
     let pathIgnore = onefunctions#getFileInTree(g:ignoreFile)
@@ -240,12 +240,12 @@ function one_stealth#ProjectEncrypt()
 
         if has_key(config, 'encryption') == 1 && config['encryption']['status'] == 1
             if has_key(s:passwords, pathSearch[1]) == 0 || empty(s:passwords[pathSearch[1]])
-                :call one_stealth#setPass(pathSearch[1])
+                :call vim_stealth#setPass(pathSearch[1])
             endif
             if has_key(s:passwords, pathSearch[1]) == 0 || empty(s:passwords[pathSearch[1]])
                 :echo onefunctions#i18n('passnotvalid')
             else
-                :call one_stealth#enableEncrypt()
+                :call vim_stealth#enableEncrypt()
                 let s:cryptWorking = 1
                 for l:node in l:globlist
                     let l:endpath = substitute(l:node, escape(pathSearch[1], '\'), "", "")
@@ -275,7 +275,7 @@ function one_stealth#ProjectEncrypt()
     endif
 endfunction
 
-function one_stealth#projectDecrypt()
+function vim_stealth#projectDecrypt()
     let pathSearch = onefunctions#getFileInTree('.one-project')
     if pathSearch != []
         let l:globstring = globpath(pathSearch[1], '**')
@@ -292,14 +292,14 @@ function one_stealth#projectDecrypt()
         if config['encryption']['status']
             let pathDecode = config['encryption']['pathDecode']
             if has_key(s:passwords, pathSearch[1]) == 0 || empty(s:passwords[pathSearch[1]])
-                :call one_stealth#setPass(pathSearch[1])
+                :call vim_stealth#setPass(pathSearch[1])
             endif
             if has_key(s:passwords, pathSearch[1]) == 0 || empty(s:passwords[pathSearch[1]])
                 :echo onefunctions#i18n('passnotvalid')
             else
                 :call delete(pathDecode, 'rf')
                 :call mkdir(pathDecode, 'p')
-                :call one_stealth#enableEncrypt()
+                :call vim_stealth#enableEncrypt()
                 :echo onefunctions#i18n('starting')
                 let s:cryptWorking = 1
                 for l:node in l:globlist
