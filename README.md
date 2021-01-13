@@ -32,6 +32,8 @@ It will work once that you have configured and installed with your own choice me
 ### How
 Every time that you enter in you project you will be requested to type the salt and after type your password and bang! you now can use this plugin in your project.
 
+![diagram](https://raw.githubusercontent.com/carlos-cabgj/vim-stealth-mode/master/doc/saltpass.gif)
+
 Every time the you open you a new file, your uncrypted content will be there, when you save you file the content will be encoded with blowfish2 ( vim blowfish ).
 
 ### Commands
