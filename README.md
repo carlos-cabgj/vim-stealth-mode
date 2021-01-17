@@ -11,6 +11,7 @@ It will work once that you have configured and installed with your own choice me
 
 ###### vimplug
 	call plug#begin('~/.vim/plugged')
+	Plug 'carlos-cabgj/one-functions'
 	Plug 'carlos-cabgj/vim-stealth-mode'
 	call plug#end()
 
