@@ -82,20 +82,20 @@ function! s:changeAlphabet(text)
 endfunction
 
 function! stealth#disableEncrypt()
-    :set swapfile
-    :set backup
-    :set writebackup
-    :set viminfo='1000,<9999,s100
+    set swapfile
+    set backup
+    set writebackup
+    set viminfo='1000,<9999,s100
 endfunction
 
 function! stealth#enableEncrypt()
-    :set noundofile
-    :set noswapfile
-    :set nobackup
-    :set nowritebackup
-    :set viminfo=
-    :set cryptmethod=blowfish2
-    :set cm=blowfish2
+    set noundofile
+    set noswapfile
+    set nobackup
+    set nowritebackup
+    set viminfo=
+    set cryptmethod=blowfish2
+    set cm=blowfish2
 endfunction
 
 function! stealth#setPassSalt(path)
@@ -171,6 +171,7 @@ function s:onSaveOneIdePre(file)
                 endif
             endif
         else
+            call stealth#disableEncrypt()
         endif
 
     endif
@@ -199,7 +200,6 @@ function s:savePreOnVim(pathSearch, pathDecode, endpath)
     endif
 
     silent! exec ':set key='.s:getTemperedPass(s:passwords[a:pathSearch[1]], expand('%:t'))
-    call stealth#disableEncrypt()
 endfunction
 
 function s:onSaveOneIdePos()
