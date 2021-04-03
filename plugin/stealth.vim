@@ -11,7 +11,7 @@ command! -n=0 -bar OneProjectEncrypt :call stealth#ProjectEncrypt()
 augroup oneenc
     autocmd BufReadPre   * call s:onReadOneIdePre(expand("<amatch>"))
     autocmd BufWritePre  * call s:onSaveOneIdePre(expand("<amatch>"))
-    autocmd BufWritePost * call s:onSaveOneIdePos()
+    " autocmd BufWritePost * call s:onSaveOneIdePos()
     autocmd VimEnter     * setlocal cm=blowfish2
 augroup end
 
@@ -179,8 +179,8 @@ endfunction
 
 " Method responsable for to send the content decrypted to other location
 function s:savePreOnVim(pathSearch, pathDecode, endpath)
-    call stealth#enableEncrypt()
  	:set key=
+    call stealth#enableEncrypt()
     let l:endpathFolder = substitute(expand('%:p:h').g:sep, escape(a:pathSearch[0], '\'), "", "")
 
     if a:pathDecode != ''
@@ -217,13 +217,13 @@ function s:onSaveOneIdePos()
 
         let l:endpath = substitute(expand('%:p'), escape(oneProjectDotFile[1], '\'), "", "")
 
-        if onefunctions#regexTestFiles(ignored, l:endpath) == 0
-            if has_key(config, 'encryption') == 1 && config['encryption']['status'] == 1
-                if has_key(s:passwords, oneProjectDotFile[1]) == 1 && s:cryptWorking == 0
-                    :set key=
-                endif
-            endif
-        endif
+        " if onefunctions#regexTestFiles(ignored, l:endpath) == 0
+        "     if has_key(config, 'encryption') == 1 && config['encryption']['status'] == 1
+        "         if has_key(s:passwords, oneProjectDotFile[1]) == 1 && s:cryptWorking == 0
+        "             :set key=
+        "         endif
+        "     endif
+        " endif
     endif
 endfunction
 
